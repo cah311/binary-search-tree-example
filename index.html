@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Binary Search Tree</title>
+  </head>
+  <body>
+    <script>
+      class Node {
+        constructor(data) {
+          this.data = data;
+          this.setLeft = null;
+          this.setRight = null;
+        }
+      }
+
+      class Tree {
+        constructor(array) {
+          this.array = this.sortArray(array);
+          this.root = this.buildTree(this.array);
+          this.size = 0;
+        }
+
+        buildTree(array) {
+          let start = 0;
+          let end = array.length - 1;
+          if (start > end) return null;
+          let mid = Math.floor((start + end) / 2);
+          let root = new Node(array[mid]);
+          this.root = root;
+
+          root.setLeft = this.buildTree(array.slice(start, mid));
+          root.setRight = this.buildTree(array.slice(mid + 1, end + 1));
+          return root;
+        }
+
+        insert(newData) {
+          let temp = this.root;
+          let prev = null;
+          let prevPath = null;
+          while (temp != null) {
+            if (temp.data > newData) {
+              prev = temp;
+              temp = temp.setLeft;
+              prevPath = 'left';
+            } else if (temp.data < newData) {
+              prev = temp;
+              temp = temp.setRight;
+              prevPath = 'right';
+            }
+          }
+          temp = new Node(newData);
+          if (prevPath == 'left') prev.setLeft = temp;
+          if (prevPath == 'right') prev.setRight = temp;
+        }
+
+        sortArray(array) {
+          let start = 0;
+          let end = array.length - 1;
+          if (start == end) return array;
+          let mid = Math.floor((start + end) / 2);
+          let a = this.sortArray(array.slice(start, mid + 1));
+          let b = this.sortArray(array.slice(mid + 1, end + 1));
+          let c = this.merge(a, b);
+          return c;
+        }
+
+        merge(a, b) {
+          let c = [];
+          let i = 0;
+          let j = 0;
+
+          while (a[i] != undefined && b[j] != undefined) {
+            if (a[i] == b[j]) {
+              b.shift(b[j]);
+            } else if (a[i] < b[j]) {
+              c.push(a[i]);
+              i++;
+            } else {
+              c.push(b[j]);
+              j++;
+            }
+          }
+
+          while (a[i] != undefined) {
+            c.push(a[i]);
+            i++;
+          }
+
+          while (b[j] != undefined) {
+            c.push(b[j]);
+            j++;
+          }
+
+          return c;
+        }
+      }
+
+      let sampleArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+      let bstSample = new Tree(sampleArray);
+    </script>
+  </body>
+</html>

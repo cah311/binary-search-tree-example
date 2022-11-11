@@ -54,6 +54,7 @@
           temp = new Node(newData);
           if (prevPath == 'left') prev.setLeft = temp;
           if (prevPath == 'right') prev.setRight = temp;
+          this.updateArray(newData);
         }
 
         sortArray(array) {
@@ -95,6 +96,14 @@
           }
 
           return c;
+        }
+
+        updateArray(data) {
+          let i = 0;
+          while (data > this.array[i]) {
+            i++;
+          }
+          this.array.splice(i, 0, data);
         }
       }
 

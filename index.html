@@ -9,18 +9,20 @@
   <body>
     <script>
       class Node {
-        constructor(data) {
+        constructor(data, size) {
           this.data = data;
           this.setLeft = null;
           this.setRight = null;
+          size++;
+          this.nodeNumber = size;
         }
       }
 
       class Tree {
         constructor(array) {
           this.array = this.sortArray(array);
+          this.nodes = 0;
           this.root = this.buildTree(this.array);
-          this.size = 0;
         }
 
         buildTree(array) {
@@ -28,8 +30,9 @@
           let end = array.length - 1;
           if (start > end) return null;
           let mid = Math.floor((start + end) / 2);
-          let root = new Node(array[mid]);
+          let root = new Node(array[mid], this.nodes);
           this.root = root;
+          this.nodes++;
 
           root.setLeft = this.buildTree(array.slice(start, mid));
           root.setRight = this.buildTree(array.slice(mid + 1, end + 1));
@@ -40,6 +43,7 @@
           let temp = this.root;
           let prev = null;
           let prevPath = null;
+
           while (temp != null) {
             if (temp.data > newData) {
               prev = temp;
@@ -54,7 +58,68 @@
           temp = new Node(newData);
           if (prevPath == 'left') prev.setLeft = temp;
           if (prevPath == 'right') prev.setRight = temp;
-          this.updateArray(newData);
+          this.addToArray(newData);
+        }
+
+        delete(value) {
+          let temp = this.root;
+          let prev = null;
+          let prevPath = null;
+          let nextSmallest = null;
+          let twoChildPrev = null;
+          while (temp.data != value) {
+            if (temp.data > value) {
+              prev = temp;
+              temp = temp.setLeft;
+              prevPath = 'left';
+            } else if (temp.data < value) {
+              prev = temp;
+              temp = temp.setRight;
+              prevPath = 'right';
+            }
+          }
+          if (temp.setLeft == null && temp.setRight == null) {
+            prev.setLeft = null;
+            prev.setRight = null;
+          } else if (temp.setLeft == null || temp.setRight == null) {
+            if (temp.setLeft == null) {
+              if (prevPath == 'left') prev.setLeft = temp.setRight;
+              if (prevPath == 'right') prev.setRight = temp.setRight;
+            } else if (temp.setRight == null) {
+              if (prevPath == 'left') prev.setLeft = temp.setLeft;
+              if (prevPath == 'right') prev.setRight = temp.setLeft;
+            }
+          } else {
+            nextSmallest = temp.setRight;
+            while (nextSmallest.setLeft != null) {
+              twoChildPrev = nextSmallest;
+              nextSmallest = nextSmallest.setLeft;
+            }
+            twoChildPrev.setLeft = nextSmallest.setRight;
+            nextSmallest.setLeft = temp.setLeft;
+            nextSmallest.setRight = temp.setRight;
+            temp = nextSmallest;
+
+            if (prevPath == 'left') prev.setLeft = temp;
+            if (prevPath == 'right') prev.setRight = temp;
+            if (prev == null) this.root = temp;
+          }
+          this.removeFromArray(value);
+        }
+
+        find(value) {
+          let temp = this.root;
+
+          while (temp != null) {
+            if (temp.data == value) {
+              return console.log(
+                `${value} is located at node ${temp.nodeNumber}`
+              );
+            } else if (temp.data > value) {
+              temp = temp.setLeft;
+            } else if (temp.data < value) temp = temp.setRight;
+          }
+          return console.log(`${value} does not exist`);
         }
 
         sortArray(array) {
@@ -98,17 +163,27 @@
           return c;
         }
 
-        updateArray(data) {
+        addToArray(data) {
           let i = 0;
           while (data > this.array[i]) {
             i++;
           }
           this.array.splice(i, 0, data);
         }
+
+        removeFromArray(data) {
+          let i = 0;
+          while (data != this.array[i]) {
+            i++;
+          }
+          this.array.splice(i, 1);
+        }
       }
 
       let sampleArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+      let sampleArray2 = [20, 30, 32, 34, 36, 40, 50, 60, 65, 70, 75, 80, 85];
       let bstSample = new Tree(sampleArray);
+      let largeSample = new Tree(sampleArray2);
     </script>
   </body>
 </html>

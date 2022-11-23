@@ -180,6 +180,26 @@
         }
       }
 
+      function leveOrder(root) {
+        if (!root) return [];
+
+        const queue = [root];
+        const output = [];
+
+        while (queue.length) {
+          let length = queue.length;
+          output.push(queue.map((node) => node.data));
+
+          while (length--) {
+            let node = queue.shift();
+            if (node.setLeft) queue.push(node.setLeft);
+            if (node.setRight) queue.push(node.setRight);
+          }
+        }
+
+        return output;
+      }
+
       let sampleArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
       let sampleArray2 = [20, 30, 32, 34, 36, 40, 50, 60, 65, 70, 75, 80, 85];
       let bstSample = new Tree(sampleArray);
